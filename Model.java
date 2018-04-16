@@ -21,6 +21,8 @@ class Model {
 
         // Initialize the model with a few balls
         balls = new Ball[2];
+
+        //Sätta vx = 0 här? --> "For the horizontal position x there are no forces so x''=0."
         balls[0] = new Ball(width / 3, height * 0.9, 1.2, 1.6, 0.2);
         balls[1] = new Ball(2 * width / 3, height * 0.7, -0.6, 0.6, 0.3);
     }

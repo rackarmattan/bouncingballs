@@ -49,6 +49,13 @@ class Model {
         }
     }
 
+    private boolean collision(Ball b1, Ball b2){
+        double distanceXsquare = (b1.x - b2.x)*(b1.x - b2.x);
+        double distanceYsquare = (b1.y - b2.y)*(b1.y - b2.y);
+        double totalDiff = distanceXsquare + distanceXsquare;
+        return totalDiff < (b1.radius + b2.radius)*(b1.radius + b2.radius);
+    }
+
     /**
      * Simple inner class describing balls.
      */

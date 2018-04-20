@@ -29,13 +29,15 @@ class Model {
         balls[0] = new Ball(width / 3, height * 0.9, 0, 1.6, 0.2);
         //den stora
         balls[1] = new Ball(2 * width / 3, height * 0.7, 0, 0.6, 0.3);
+
+        balls[1].vx = 1;
     }
 
     void step(double deltaT) {
         // TODO this method implements one step of simulation with a step deltaT
         for (Ball b : balls) {
             // detect collision with the border
-            if (b.x < b.radius || b.x > areaWidth - b.radius) {
+            if (b.x < b.radius || b.x > areaWidth - b.radius || collision()) {
                 b.vx *= -1; // change direction of ball
             }
             if (b.y < b.radius || b.y > areaHeight - b.radius) {
@@ -49,10 +51,12 @@ class Model {
         }
     }
 
-    private boolean collision(Ball b1, Ball b2){
+    private boolean collision(){
+        Ball b1 = balls[0];
+        Ball b2 = balls[1];
         double distanceXsquare = (b1.x - b2.x)*(b1.x - b2.x);
         double distanceYsquare = (b1.y - b2.y)*(b1.y - b2.y);
-        double totalDiff = distanceXsquare + distanceXsquare;
+        double totalDiff = distanceYsquare + distanceXsquare;
         return totalDiff < (b1.radius + b2.radius)*(b1.radius + b2.radius);
     }
 

@@ -40,14 +40,16 @@ class Model {
             if (b.x < b.radius || b.x > areaWidth - b.radius || collision()) {
                 b.vx *= -1; // change direction of ball
             }
-            if (b.y < b.radius || b.y > areaHeight - b.radius) {
+            if (b.y < b.radius || b.y > areaHeight - b.radius || collision()) {
                 b.vy *= -1;
+                b.vy--;
             }
 
             // compute new position according to the speed of the ball
             b.vy += -deltaT * gravity;
             b.x += deltaT * b.vx;
             b.y += deltaT * b.vy;
+
         }
     }
 

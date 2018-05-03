@@ -26,9 +26,9 @@ class Model {
         balls = new Ball[2];
 
         //Sätta vx = 0 här? --> "For the horizontal position x there are no forces so x''=0."
-        balls[0] = new Ball(width / 3, height * 0.9, 0, 1.6, 0.2);
+        balls[0] = new Ball(width / 3, height * 0.9, 0, 1, 0.2);
         //den stora
-        balls[1] = new Ball(2 * width / 3, height * 0.7, 0, 0.6, 0.3);
+        balls[1] = new Ball(2 * width / 3, height * 0.7, 0, 1, 0.2);
 
         balls[1].vx = 1;
     }
@@ -42,8 +42,10 @@ class Model {
             }
             if (b.y < b.radius || b.y > areaHeight - b.radius || collision()) {
                 b.vy *= -1;
-                b.vy--;
             }
+
+
+
 
             // compute new position according to the speed of the ball
             b.vy += -deltaT * gravity;
@@ -56,6 +58,14 @@ class Model {
     private boolean collision(){
         Ball b1 = balls[0];
         Ball b2 = balls[1];
+
+        //equations
+        double u1 = Math.sqrt(b1.vx*b1.vx + b1.vy*b1.vy);
+        double u2 = Math.sqrt(b2.vx*b2.vx + b2.vy*b2.vy);
+
+        double I = b1.radius*u1 + b2.radius*u2;
+        double R = u1 - u2;
+
         double distanceXsquare = (b1.x - b2.x)*(b1.x - b2.x);
         double distanceYsquare = (b1.y - b2.y)*(b1.y - b2.y);
         double totalDiff = distanceYsquare + distanceXsquare;

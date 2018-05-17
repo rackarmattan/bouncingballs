@@ -16,6 +16,7 @@ class Model {
     double areaWidth, areaHeight;
     private final double gravity;
     private int time;
+    private final int WAIT = 10;
 
     Ball [] balls;
 
@@ -29,11 +30,10 @@ class Model {
         balls = new Ball[2];
 
         //Sätta vx = 0 här? --> "For the horizontal position x there are no forces so x''=0."
-        balls[0] = new Ball(width / 3, height * 0.7, 1, 0.8, 0.5);
+        balls[0] = new Ball(width / 3, height * 0.7, 1, 0.8, 0.4);
         //den stora
-        balls[1] = new Ball(2 * width / 3, height * 0.7, -0.9, 1, 0.3);
+        balls[1] = new Ball(2 * width / 3, height * 0.7, -0.9, 1, 0.45);
 
-        balls[1].vx = 1;
     }
 
     void step(double deltaT) {
@@ -53,7 +53,7 @@ class Model {
                 if(detectCollision()){
 
                     //vinkeln till nya planet
-                    double beta = getAngle();
+                    //double beta = getAngle();
 
                     double before = balls[0].radius*balls[0].vx + balls[1].radius*balls[1].vx;
 
@@ -103,7 +103,7 @@ class Model {
         double distanceYsquare = (b1.y - b2.y)*(b1.y - b2.y);
         double totalDiff = distanceYsquare + distanceXsquare;
 
-        time = 5;
+        time = WAIT;
         return totalDiff < (b1.radius + b2.radius)*(b1.radius + b2.radius);
     }
 
@@ -117,7 +117,7 @@ class Model {
         return (Math.atan(y/x));
     }
 
-    /*
+
     private void rotate(double angle){
         //rotera x och y till ny dimension?
 
@@ -134,7 +134,8 @@ class Model {
 
         balls[1].vx = Math.cos(angle)*vx2 - Math.sin(angle)*vy2;
         balls[1].vy = Math.sin(angle)*vx2 + Math.cos(angle)*vy2;
-    }*/
+    }
+
 
 
     private void vectorCalc(){
@@ -186,7 +187,7 @@ class Model {
     }
 
 
-/*
+
     private void calculate(){
         double u1 = balls[0].vx;
         double u2 = balls[1].vx;
@@ -206,7 +207,7 @@ class Model {
 
         balls[0].vx = v1;
         balls[1].vx = v2;
-    }*/
+    }
 
     /**
      * Simple inner class describing balls.

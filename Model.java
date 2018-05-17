@@ -9,15 +9,18 @@
  * @author Simon Robillard
  *
  */
+import java.lang.Math;
+
 class Model {
 
     double areaWidth, areaHeight;
     private final double gravity;
-
+    private int time;
 
     Ball [] balls;
 
     Model(double width, double height) {
+        time = 0;
         areaWidth = width;
         areaHeight = height;
         gravity = 9.82;
@@ -26,9 +29,9 @@ class Model {
         balls = new Ball[2];
 
         //Sätta vx = 0 här? --> "For the horizontal position x there are no forces so x''=0."
-        balls[0] = new Ball(width / 3, height * 0.9, 0, 1, 0.2);
+        balls[0] = new Ball(width / 3, height * 0.7, 1, 0.8, 0.5);
         //den stora
-        balls[1] = new Ball(2 * width / 3, height * 0.7, 0, 1, 0.2);
+        balls[1] = new Ball(2 * width / 3, height * 0.7, -0.9, 1, 0.3);
 
         balls[1].vx = 1;
     }
@@ -37,18 +40,45 @@ class Model {
         // TODO this method implements one step of simulation with a step deltaT
         for (Ball b : balls) {
 
-            if(detectCollision()){
-                //vinkeln till nya planet
-                double beta = getAngle();
+            // compute new position according to the speed of the ball
+            //b.vy -= deltaT * gravity;
+            b.x += deltaT * b.vx;
+            b.y += deltaT * b.vy;
 
-                //rotera till nya planet
-                rotate(beta);
+            if(time > 0){
+                time--;
+            }
+            else{
 
-                //räkna ut ny velocity
-                calculate();
+                if(detectCollision()){
 
-                //rotera tillbaka
-                rotate(-beta);
+                    //vinkeln till nya planet
+                    double beta = getAngle();
+
+                    double before = balls[0].radius*balls[0].vx + balls[1].radius*balls[1].vx;
+
+                    System.out.println("Before collision: " + balls[0].radius*balls[0].vx + balls[1].radius*balls[1].vx);
+
+                    //rotera till nya planet
+                    //rotate(-beta);
+
+                    //räkna ut ny velocity
+                    //calculate();
+
+                    //rotera tillbaka
+                    //rotate(beta);
+
+                    vectorCalc();
+
+                    System.out.println("After collision: " + balls[0].radius*balls[0].vx + balls[1].radius*balls[1].vx);
+
+                    double after = balls[0].radius*balls[0].vx + balls[1].radius*balls[1].vx;
+
+                    System.out.println("Difference: " + (before - after));
+
+                    System.out.println("");
+
+                }
             }
             // detect detectCollision with the border
             if (b.x < b.radius || b.x > areaWidth - b.radius) {
@@ -57,16 +87,10 @@ class Model {
             if (b.y < b.radius || b.y > areaHeight - b.radius) {
                 b.vy *= -1;
             }
+            else{
+                b.vy -= deltaT * gravity;
+            }
 
-
-
-
-
-
-            // compute new position according to the speed of the ball
-            b.vy += -deltaT * gravity;
-            b.x += deltaT * b.vx;
-            b.y += deltaT * b.vy;
 
         }
     }
@@ -75,66 +99,114 @@ class Model {
         Ball b1 = balls[0];
         Ball b2 = balls[1];
 
-        //equations
-        double u1 = Math.sqrt(b1.vx*b1.vx + b1.vy*b1.vy);
-        double u2 = Math.sqrt(b2.vx*b2.vx + b2.vy*b2.vy);
-
-        double I = b1.radius*u1 + b2.radius*u2;
-        double R = u1 - u2;
-
         double distanceXsquare = (b1.x - b2.x)*(b1.x - b2.x);
         double distanceYsquare = (b1.y - b2.y)*(b1.y - b2.y);
         double totalDiff = distanceYsquare + distanceXsquare;
+
+        time = 5;
         return totalDiff < (b1.radius + b2.radius)*(b1.radius + b2.radius);
     }
 
 
     //vinkeln mellan hypotenusan och vanliga x-axeln
     private double getAngle(){
+        //vinkeln planet lutar
+
         double x = Math.abs(balls[0].x - balls[1].x);
         double y = Math.abs(balls[0].y - balls[1].y);
-        double h = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        return (Math.acos(x/h));
+        return (Math.atan(y/x));
     }
 
-    private void rotate(double beta){
+    /*
+    private void rotate(double angle){
         //rotera x och y till ny dimension?
 
         //gamla vx och vy (boll 1)
-        double vx11 = balls[0].vx;
-        double vy11 = balls[0].vy;
+        double vx1 = balls[0].vx;
+        double vy1 = balls[0].vy;
 
         //gamla vx och vy (boll 2)
-        double vx21 = balls[1].vx;
-        double vy21 = balls[1].vy;
+        double vx2 = balls[1].vx;
+        double vy2 = balls[1].vy;
 
-        //nya vx och vy (boll 1)
-        balls[0].vx = Math.cos(beta)*vx11 - Math.sin(beta)*vy11;
-        balls[0].vy = Math.sin(beta)*vx11 + Math.cos(beta)*vy11;
+        balls[0].vx = Math.cos(angle)*vx1 - Math.sin(angle)*vy1;
+        balls[0].vy = Math.sin(angle)*vx1 + Math.cos(angle)*vy1;
 
-        //nya vx och vy (boll 2)
-        balls[1].vx = Math.cos(beta)*vx21 - Math.sin(beta)*vy21;
-        balls[1].vy = Math.sin(beta)*vx21 + Math.cos(beta)*vy21;
+        balls[1].vx = Math.cos(angle)*vx2 - Math.sin(angle)*vy2;
+        balls[1].vy = Math.sin(angle)*vx2 + Math.cos(angle)*vy2;
+    }*/
+
+
+    private void vectorCalc(){
+        //double u1 = balls[0].vx;
+        //double u2 = balls[1].vx;
+        double m1 = balls[0].radius;
+        double m2 = balls[1].radius;
+
+        //normal vector
+        Vector2D normal = new Vector2D(balls[0].x - balls[1].x, balls[0].y - balls[1].y);
+
+        //unit vector of n
+        Vector2D un = normal.normalize();
+
+        //tangent vector
+        Vector2D ut = new Vector2D(-un.dY, un.dX);
+
+        //velocity vector ball1 and 2
+        Vector2D u1 = new Vector2D(balls[0].vx, balls[0].vy);
+        Vector2D u2 = new Vector2D(balls[1].vx, balls[1].vy);
+
+        //project velocity vectors onto the unit normal and unit tangent vectors
+        double u1n = un.dotProduct(u1);
+        double u1t = ut.dotProduct(u1);
+
+        double u2n = un.dotProduct(u2);
+        double u2t = ut.dotProduct(u2);
+
+        //calculations for collision
+
+        double v1n = ((u1n*(m1 - m2) + (2*m2*u2n)))/(m1+m2);
+        double v2n = ((u2n*(m2 - m1) + (2*m1*u1n)))/(m1+m2);
+
+        //convert scalar normal and tangential velocities into vectors
+        Vector2D v1nVec = new Vector2D(un.dX*v1n, un.dY*v1n);
+        Vector2D v1tVec = new Vector2D(ut.dX*u1t, ut.dY*u1t);
+
+        Vector2D v2nVec = new Vector2D(un.dX*v2n, un.dY*v2n);
+        Vector2D v2tVec = new Vector2D(ut.dX*u2t, ut.dY*u2t);
+
+        Vector2D v1 = v1nVec.add(v1tVec);
+        Vector2D v2 = v2nVec.add(v2tVec);
+
+        balls[0].vx = v1.dX;
+        balls[0].vy = v1.dY;
+
+        balls[1].vx = v2.dX;
+        balls[1].vy = v2.dY;
     }
 
 
+/*
     private void calculate(){
         double u1 = balls[0].vx;
         double u2 = balls[1].vx;
         double m1 = balls[0].radius;
         double m2 = balls[1].radius;
 
-        //kalkulera nya v1 och v2?????????????????++
-        double v1 = ((m1 - m2)*u1 + (2*m2*u2))/(m1 + m2);
-        double v2 = ((m2 - m1)*u2 + (2*m1*u1))/(m1 + m2);
+        double R = -(u2 - u1);
+        double I = m1*u1 + m2*u2;
+
+        //double v1 = (I - m2*R) / (m1 + m2);
+        //double v2 = (I + m1*R) / (m1 + m2);
+
+        double v1 = (u1*(m1 - m2) + 2*m2*u2)/(m1 + m2);
+        double v2 = (u2*(m2 - m1) + 2*m1*u1)/(m1 + m2);
 
         //haha sätt nya vx och vy
 
         balls[0].vx = v1;
         balls[1].vx = v2;
-
-
-    }
+    }*/
 
     /**
      * Simple inner class describing balls.
@@ -142,6 +214,9 @@ class Model {
     class Ball {
 
         Ball(double x, double y, double vx, double vy, double r) {
+
+
+
             this.x = x;
             this.y = y;
             this.vx = vx;

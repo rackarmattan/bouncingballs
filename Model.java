@@ -68,6 +68,8 @@ class Model {
                     //rotera tillbaka
                     //rotate(beta);
 
+
+                    // prasanth på fire!!!!!!!!
                     vectorCalc();
 
                     System.out.println("After collision: " + balls[0].radius*balls[0].vx + balls[1].radius*balls[1].vx);
@@ -146,6 +148,7 @@ class Model {
 
         //normal vector
         Vector2D normal = new Vector2D(balls[0].x - balls[1].x, balls[0].y - balls[1].y);
+
 
         //unit vector of n
         Vector2D un = normal.normalize();
